@@ -52,6 +52,31 @@ def check_winner(board: np.ndarray, player: Player) -> bool:
 
     return False
 
+def get_winning_cells(board: np.ndarray, player: Player) -> list[tuple[int, int]]:
+    """Return list of (row, col) cells forming the winning four. Empty list if no win."""
+    b = board
+    for r in range(ROWS):
+        for c in range(COLS - 3):
+            cells = [(r, c + i) for i in range(4)]
+            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+                return cells
+    for r in range(ROWS - 3):
+        for c in range(COLS):
+            cells = [(r + i, c) for i in range(4)]
+            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+                return cells
+    for r in range(3, ROWS):
+        for c in range(COLS - 3):
+            cells = [(r - i, c + i) for i in range(4)]
+            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+                return cells
+    for r in range(ROWS - 3):
+        for c in range(COLS - 3):
+            cells = [(r + i, c + i) for i in range(4)]
+            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+                return cells
+    return []
+
 
 class Connect4:
     """
@@ -65,6 +90,7 @@ class Connect4:
         self.current_player: Player = random.choice([P1, P2])
         self.done: bool = False
         self.winner: Optional[Player] = None
+        self.cols: int = COLS
 
     # ------------------------------------------------------------------
     # Core RL-style interface
