@@ -93,7 +93,6 @@ class Connect4:
         if col < 0 or col >= COLS:
             raise ValueError(f"Column {col} is full or out of range.")
         if col not in self.get_valid_moves():
-            print("Ay yo")
             self.done = True
             self.winner = P2 if self.current_player == P1 else P1
             info = {"winner": self.winner, "valid_moves": self.get_valid_moves()}
