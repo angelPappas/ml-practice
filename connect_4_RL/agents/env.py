@@ -1,7 +1,7 @@
 import numpy as np
 import random
 from typing import Callable
-from game.game import Connect4, ROWS, COLS, P1, P2, get_winning_cells
+from game.game import Connect4, ROWS, COLS, P1, P2, get_winning_cells, score_move
 
 
 # ── Built-in agents ───────────────────────────────────────────────────
@@ -19,11 +19,23 @@ def agent_middle(game: Connect4) -> int:
     """Picks the middle column."""
     return game.cols // 2
 
+def agent_heuristic(game: Connect4) -> int:
+    """Heuristic agent."""
+    # Get list of valid moves
+    valid_moves = game.get_valid_moves()
+    # Use the heuristic to assign a score to each possible board in the next turn
+    scores = dict(zip(valid_moves, [score_move(game, col, game.current_player.symbol) for col in valid_moves]))
+    # Get a list of columns (moves) that maximize the heuristic
+    max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]
+    # Select at random from the maximizing columns
+    return random.choice(max_cols)
+
 
 BUILTIN_AGENTS = {
     "random": random_agent,
     "leftmost": agent_leftmost,
     "middle": agent_middle,
+    "heuristic": agent_heuristic,
 }
 
 
@@ -76,6 +88,31 @@ class ConnectXEnv:
             "winner": self.game.winner,
             "num_moves": len(self.history) - 1,
             "history": self.history,
+        }
+
+    def run_n_times(self, agents: list, num_games: int) -> dict:
+        """Run multiple games and return list of results."""
+        if num_games <= 0:
+            raise ValueError("num_games must be >= 1 to use run_n_times()")
+        elif num_games == 1:
+            return self.run(agents)
+
+        agent_1_wins = 0
+        agent_2_wins = 0
+        draws = 0
+
+        for _ in range(num_games):
+            result = self.run(agents)
+            if result["winner"] == P1:
+                agent_1_wins += 1
+            elif result["winner"] == P2:
+                agent_2_wins += 1
+            else:
+                draws += 1
+        return {
+            "agent_1_wins": agent_1_wins,
+            "agent_2_wins": agent_2_wins,
+            "draws": draws
         }
 
     # ------------------------------------------------------------------
