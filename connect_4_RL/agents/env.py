@@ -3,8 +3,8 @@ import random
 from typing import Callable
 from game.game import Connect4, ROWS, COLS, P1, P2, get_winning_cells, score_move
 
-
 # ── Built-in agents ───────────────────────────────────────────────────
+
 
 def random_agent(game: Connect4) -> int:
     """Picks a random valid column."""
@@ -15,16 +15,23 @@ def agent_leftmost(game: Connect4) -> int:
     """Always picks the leftmost valid column."""
     return game.get_valid_moves()[0]
 
+
 def agent_middle(game: Connect4) -> int:
     """Picks the middle column."""
     return game.cols // 2
+
 
 def agent_heuristic(game: Connect4) -> int:
     """Heuristic agent."""
     # Get list of valid moves
     valid_moves = game.get_valid_moves()
     # Use the heuristic to assign a score to each possible board in the next turn
-    scores = dict(zip(valid_moves, [score_move(game, col, game.current_player.symbol) for col in valid_moves]))
+    scores = dict(
+        zip(
+            valid_moves,
+            [score_move(game, col, game.current_player.symbol) for col in valid_moves],
+        )
+    )
     # Get a list of columns (moves) that maximize the heuristic
     max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]
     # Select at random from the maximizing columns
@@ -52,7 +59,7 @@ class ConnectXEnv:
 
     def __init__(self):
         self.game = Connect4()
-        self.history: list[np.ndarray] = []   # board snapshot after each move
+        self.history: list[np.ndarray] = []  # board snapshot after each move
 
     # ------------------------------------------------------------------
     # Run a full game between two agents
@@ -76,7 +83,7 @@ class ConnectXEnv:
         self.history = [self.game.board.copy()]
 
         while not self.game.done:
-            agent_idx = self.game.current_player.symbol - 1   # P1=0, P2=1
+            agent_idx = self.game.current_player.symbol - 1  # P1=0, P2=1
             agent_fn = resolved[agent_idx]
 
             col = agent_fn(self.game)
@@ -112,7 +119,7 @@ class ConnectXEnv:
         return {
             "agent_1_wins": agent_1_wins,
             "agent_2_wins": agent_2_wins,
-            "draws": draws
+            "draws": draws,
         }
 
     # ------------------------------------------------------------------
@@ -135,17 +142,19 @@ class ConnectXEnv:
             from matplotlib.animation import FuncAnimation
             from IPython.display import HTML, display
         except ImportError:
-            raise ImportError("Install matplotlib and ipython: pip install matplotlib ipython")
+            raise ImportError(
+                "Install matplotlib and ipython: pip install matplotlib ipython"
+            )
 
         fig, ax = plt.subplots(figsize=(7, 6))
         fig.patch.set_facecolor("#0f172a")
 
         # ── Colours ───────────────────────────────────────────────────
-        BOARD_COLOR  = "#1d4ed8"
-        HOLE_COLOR   = "#0f172a"
-        P1_COL       = "#ef4444"
-        P2_COL       = "#f59e0b"
-        TEXT_COL     = "#e2e8f0"
+        BOARD_COLOR = "#1d4ed8"
+        HOLE_COLOR = "#0f172a"
+        P1_COL = "#ef4444"
+        P2_COL = "#f59e0b"
+        TEXT_COL = "#e2e8f0"
 
         def draw_frame(step_idx):
             ax.clear()
@@ -159,9 +168,12 @@ class ConnectXEnv:
 
             # Board background
             board_rect = patches.FancyBboxPatch(
-                (-0.55, -0.55), COLS + 0.1, ROWS + 0.1,
+                (-0.55, -0.55),
+                COLS + 0.1,
+                ROWS + 0.1,
                 boxstyle="round,pad=0.1",
-                linewidth=0, facecolor=BOARD_COLOR
+                linewidth=0,
+                facecolor=BOARD_COLOR,
             )
             ax.add_patch(board_rect)
 
@@ -175,7 +187,7 @@ class ConnectXEnv:
             for r in range(ROWS):
                 for c in range(COLS):
                     val = board[r][c]
-                    y = ROWS - 1 - r   # flip so row 0 is top
+                    y = ROWS - 1 - r  # flip so row 0 is top
 
                     if val == P1.symbol:
                         color = P1_COL
@@ -196,14 +208,25 @@ class ConnectXEnv:
                 cells = sorted(winning_cells)
                 xs = [c for r, c in cells]
                 ys = [ROWS - 1 - r for r, c in cells]
-                ax.plot(xs, ys, color="white", linewidth=4, alpha=0.8,
-                        solid_capstyle="round", zorder=4)
+                ax.plot(
+                    xs,
+                    ys,
+                    color="white",
+                    linewidth=4,
+                    alpha=0.8,
+                    solid_capstyle="round",
+                    zorder=4,
+                )
 
             # Status text
             total = len(self.history) - 1
             if step_idx == len(self.history) - 1 and self.game.done:
                 if self.game.winner:
-                    pname = "Player 1 (Red)" if self.game.winner == P1 else "Player 2 (Yellow)"
+                    pname = (
+                        "Player 1 (Red)"
+                        if self.game.winner == P1
+                        else "Player 2 (Yellow)"
+                    )
                     title = f"{pname} wins!"
                 else:
                     title = "Draw!"
@@ -216,7 +239,7 @@ class ConnectXEnv:
             fig,
             draw_frame,
             frames=len(self.history),
-            interval=500,       # ms per frame
+            interval=500,  # ms per frame
             repeat=True,
         )
 
@@ -233,7 +256,9 @@ class ConnectXEnv:
             for row in board:
                 print("  ".join(symbols[v] for v in row))
         if self.game.winner:
-            print(f"\n🏆 Player {self.game.winner} wins in {len(self.history)-1} moves!")
+            print(
+                f"\n🏆 Player {self.game.winner} wins in {len(self.history)-1} moves!"
+            )
         else:
             print("\n🤝 Draw!")
 
@@ -244,7 +269,9 @@ class ConnectXEnv:
     def _resolve_agent(self, agent) -> Callable:
         if isinstance(agent, str):
             if agent not in BUILTIN_AGENTS:
-                raise ValueError(f"Unknown agent '{agent}'. Available: {list(BUILTIN_AGENTS)}")
+                raise ValueError(
+                    f"Unknown agent '{agent}'. Available: {list(BUILTIN_AGENTS)}"
+                )
             return BUILTIN_AGENTS[agent]
         if callable(agent):
             return agent

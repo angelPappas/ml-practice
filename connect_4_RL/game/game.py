@@ -12,12 +12,14 @@ class Player:
     """
     Connect 4 player.
     """
+
     def __init__(self, player_id: int):
         self.name = f"P{player_id}"
         self.symbol = player_id
-    
+
     def __str__(self):
         return self.name
+
 
 P1 = Player(1)
 P2 = Player(2)
@@ -53,6 +55,7 @@ def check_winner(board: np.ndarray, player: Player) -> bool:
 
     return False
 
+
 def get_winning_cells(board: np.ndarray, player: Player) -> list[tuple[int, int]]:
     """Return list of (row, col) cells forming the winning four. Empty list if no win."""
     b = board
@@ -78,61 +81,75 @@ def get_winning_cells(board: np.ndarray, player: Player) -> list[tuple[int, int]
                 return cells
     return []
 
+
 # Calculates score if agent drops piece in selected column
 def score_move(game, col, mark):
     next_grid = drop_piece(game, col, mark)
     score = get_heuristic(next_grid, mark)
     return score
 
+
 # Helper function for score_move: gets board at next step if agent drops piece in selected column
 def drop_piece(game, col, mark):
     next_grid = game.copy()
-    for row in range(game.rows-1, -1, -1):
+    for row in range(game.rows - 1, -1, -1):
         if next_grid.board[row][col] == 0:
             break
     next_grid.board[row][col] = mark
     return next_grid
 
+
 # Helper function for score_move: calculates value of heuristic for grid
 def get_heuristic(grid, mark):
     num_threes = count_windows(grid, 3, mark)
     num_fours = count_windows(grid, 4, mark)
-    num_threes_opp = count_windows(grid, 3, mark%2+1)
-    score = num_threes - 1e2*num_threes_opp + 1e6*num_fours
+    num_threes_opp = count_windows(grid, 3, mark % 2 + 1)
+    score = num_threes - 1e2 * num_threes_opp + 1e6 * num_fours
     return score
+
 
 # Helper function for get_heuristic: checks if window satisfies heuristic conditions
 def check_window(window, num_discs, piece, game):
-    return (window.count(piece) == num_discs and window.count(0) == game.inarow-num_discs)
-    
+    return (
+        window.count(piece) == num_discs and window.count(0) == game.inarow - num_discs
+    )
+
+
 # Helper function for get_heuristic: counts number of windows satisfying specified heuristic conditions
 def count_windows(game, num_discs, piece):
     num_windows = 0
     # horizontal
     for row in range(game.rows):
-        for col in range(game.cols-(game.inarow-1)):
-            window = list(game.board[row, col:col+game.inarow])
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(game.board[row, col : col + game.inarow])
             if check_window(window, num_discs, piece, game):
                 num_windows += 1
     # vertical
-    for row in range(game.rows-(game.inarow-1)):
+    for row in range(game.rows - (game.inarow - 1)):
         for col in range(game.cols):
-            window = list(game.board[row:row+game.inarow, col])
+            window = list(game.board[row : row + game.inarow, col])
             if check_window(window, num_discs, piece, game):
                 num_windows += 1
     # positive diagonal
-    for row in range(game.rows-(game.inarow-1)):
-        for col in range(game.cols-(game.inarow-1)):
-            window = list(game.board[range(row, row+game.inarow), range(col, col+game.inarow)])
+    for row in range(game.rows - (game.inarow - 1)):
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(
+                game.board[range(row, row + game.inarow), range(col, col + game.inarow)]
+            )
             if check_window(window, num_discs, piece, game):
                 num_windows += 1
     # negative diagonal
-    for row in range(game.inarow-1, game.rows):
-        for col in range(game.cols-(game.inarow-1)):
-            window = list(game.board[range(row, row-game.inarow, -1), range(col, col+game.inarow)])
+    for row in range(game.inarow - 1, game.rows):
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(
+                game.board[
+                    range(row, row - game.inarow, -1), range(col, col + game.inarow)
+                ]
+            )
             if check_window(window, num_discs, piece, game):
                 num_windows += 1
     return num_windows
+
 
 class Connect4:
     """
@@ -149,7 +166,7 @@ class Connect4:
         self.cols: int = COLS
         self.rows: int = ROWS
         self.inarow: int = INAROW
-    
+
     def copy(self) -> "Connect4":
         new_game = Connect4()
         new_game.board = self.board.copy()
@@ -160,6 +177,7 @@ class Connect4:
         new_game.rows = self.rows
         new_game.inarow = self.inarow
         return new_game
+
     # ------------------------------------------------------------------
     # Core RL-style interface
     # ------------------------------------------------------------------
@@ -191,7 +209,6 @@ class Connect4:
             self.winner = P2 if self.current_player == P1 else P1
             info = {"winner": self.winner, "valid_moves": self.get_valid_moves()}
             return self.board.copy(), self.done, info
-        
 
         self._drop_piece(col, self.current_player)
 
@@ -225,7 +242,7 @@ class Connect4:
                 self.board[row][col] = player.symbol
                 return row
         raise ValueError(f"Column {col} is full.")
-    
+
     # ------------------------------------------------------------------
     # Terminal rendering
     # ------------------------------------------------------------------
@@ -238,8 +255,12 @@ class Connect4:
         print()
         if self.done:
             if self.winner:
-                print(f"Player {self.winner} ({'X' if self.winner == P1 else 'O'}) wins!")
+                print(
+                    f"Player {self.winner} ({'X' if self.winner == P1 else 'O'}) wins!"
+                )
             else:
                 print("It's a draw!")
         else:
-            print(f"Player {self.current_player}'s turn ({'X' if self.current_player == P1 else 'O'})")
+            print(
+                f"Player {self.current_player}'s turn ({'X' if self.current_player == P1 else 'O'})"
+            )

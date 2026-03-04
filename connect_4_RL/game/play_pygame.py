@@ -4,20 +4,20 @@ import numpy as np
 from game import Connect4, ROWS, COLS, EMPTY, P1, P2
 
 # ── Layout ────────────────────────────────────────────────────────────
-CELL = 100          # pixels per cell
+CELL = 100  # pixels per cell
 RADIUS = CELL // 2 - 8
 WIDTH = COLS * CELL
-HEIGHT = (ROWS + 1) * CELL   # +1 row at top for the drop preview
+HEIGHT = (ROWS + 1) * CELL  # +1 row at top for the drop preview
 FPS = 60
 
 # ── Colors ────────────────────────────────────────────────────────────
-BG          = (15,  23,  42)   # dark navy
-BOARD_BLUE  = (29, 78, 216)
-HOLE_EMPTY  = (15,  23,  42)
-P1_COLOR    = (239, 68,  68)   # red
-P2_COLOR    = (245, 158,  11)  # amber
-WIN_GLOW    = (255, 255, 100)
-TEXT_COLOR  = (226, 232, 240)
+BG = (15, 23, 42)  # dark navy
+BOARD_BLUE = (29, 78, 216)
+HOLE_EMPTY = (15, 23, 42)
+P1_COLOR = (239, 68, 68)  # red
+P2_COLOR = (245, 158, 11)  # amber
+WIN_GLOW = (255, 255, 100)
+TEXT_COLOR = (226, 232, 240)
 PREVIEW_ALPHA = 120
 
 
@@ -29,12 +29,15 @@ def draw_board(screen, game: Connect4, font, hover_col: int | None):
     # ── Drop preview (top row) ────────────────────────────────────────
     if hover_col is not None and not game.done and game.is_valid_move(hover_col):
         preview_surf = pygame.Surface((CELL, CELL), pygame.SRCALPHA)
-        pygame.draw.circle(preview_surf, (*player_color, PREVIEW_ALPHA),
-                           (CELL // 2, CELL // 2), RADIUS)
+        pygame.draw.circle(
+            preview_surf, (*player_color, PREVIEW_ALPHA), (CELL // 2, CELL // 2), RADIUS
+        )
         screen.blit(preview_surf, (hover_col * CELL, 0))
 
     # ── Blue board ────────────────────────────────────────────────────
-    pygame.draw.rect(screen, BOARD_BLUE, (0, CELL, WIDTH, ROWS * CELL), border_radius=16)
+    pygame.draw.rect(
+        screen, BOARD_BLUE, (0, CELL, WIDTH, ROWS * CELL), border_radius=16
+    )
 
     for r in range(ROWS):
         for c in range(COLS):
@@ -100,7 +103,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN and not game.done:
                 mx, my = event.pos
-                if my > CELL:   # click on board, not header
+                if my > CELL:  # click on board, not header
                     col = mx // CELL
                     game.step(col)
 

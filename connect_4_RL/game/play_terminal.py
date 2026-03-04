@@ -15,7 +15,9 @@ def main():
             break
 
         valid = game.get_valid_moves()
-        prompt = f"Player {game.current_player} — choose column {[c+1 for c in valid]}: "
+        prompt = (
+            f"Player {game.current_player} — choose column {[c+1 for c in valid]}: "
+        )
 
         col = int(input(prompt)) - 1
         game.step(col)
