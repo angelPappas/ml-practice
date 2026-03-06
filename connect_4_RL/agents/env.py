@@ -257,7 +257,7 @@ class ConnectXEnv:
                 print("  ".join(symbols[v] for v in row))
         if self.game.winner:
             print(
-                f"\n🏆 Player {self.game.winner} wins in {len(self.history)-1} moves!"
+                f"\n🏆 Player {self.game.winner} wins in {len(self.history) - 1} moves!"
             )
         else:
             print("\n🤝 Draw!")
