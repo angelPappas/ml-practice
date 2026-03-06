@@ -21,3 +21,4 @@ jobs:
 
       - name: Run pre-commit
         run: pre-commit run --all-files
+        working-directory: connect_4_RL
