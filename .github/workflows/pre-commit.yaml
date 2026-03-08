@@ -18,6 +18,15 @@ jobs:
         working-directory: connect_4_RL
       - name: Install pre-commit
         run: pip install pre-commit
+      - name: Debug venv
+        run: |
+          echo "=== .venv exists ==="
+          ls connect_4_RL/.venv/lib/python3.12/site-packages/ | grep -E "numpy|matplotlib|pygame"
+          echo "=== pyproject.toml pyright section ==="
+          cat connect_4_RL/pyproject.toml | grep -A5 "pyright"
+          echo "=== working dir when pre-commit runs ==="
+          pwd
+        working-directory: connect_4_RL
       - name: Run pre-commit
         run: pre-commit run --all-files
         working-directory: connect_4_RL
