@@ -15,8 +15,13 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Create venv and install dependencies
         run: uv sync --project connect_4_RL
-      - name: Debug venv
-        run: ls connect_4_RL/.venv/lib/python3.12/site-packages/ | grep numpy
+      - name: Debug uv sync
+        run: |
+          uv sync --project connect_4_RL --verbose
+          echo "=== find .venv ==="
+          find . -name ".venv" -type d 2>/dev/null || echo "no .venv found anywhere"
+          echo "=== find pyvenv.cfg ==="
+          find . -name "pyvenv.cfg" 2>/dev/null || echo "no pyvenv.cfg found"
         working-directory: connect_4_RL
       - name: Install pre-commit
         run: pip install pre-commit
