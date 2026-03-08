@@ -17,7 +17,7 @@ repos:
       # Lint Python files with ruff, fixing issues automatically, fail commit if any issues were fixed,
       # use repo's pyproject.toml for configuration
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --config=pyproject.toml]
+        args: [--fix, --exit-non-zero-on-fix, --config=connect_4_RL/pyproject.toml]
       - id: ruff-format # Format Python files with ruff
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.407

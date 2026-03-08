@@ -1,7 +1,6 @@
 import sys
 import pygame
-import numpy as np
-from game import Connect4, ROWS, COLS, EMPTY, P1, P2
+from game import Connect4, ROWS, COLS, EMPTY, P1
 
 # ── Layout ────────────────────────────────────────────────────────────
 CELL = 100  # pixels per cell
