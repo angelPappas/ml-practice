@@ -12,9 +12,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install uv
-        run: pip install uv
+        uses: astral-sh/setup-uv@v5
       - name: Create venv and install dependencies
-        run: uv sync
+        run: uv sync --project connect_4_RL
+      - name: Debug venv
+        run: ls connect_4_RL/.venv/lib/python3.12/site-packages/ | grep numpy
         working-directory: connect_4_RL
       - name: Install pre-commit
         run: pip install pre-commit
