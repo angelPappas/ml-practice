@@ -82,15 +82,15 @@ def get_winning_cells(board: np.ndarray, player: Player) -> list[tuple[int, int]
     return []
 
 
-# Calculates score if agent drops piece in selected column
 def score_move(game, col, mark):
+    """Calculates score if agent drops piece in selected column."""
     next_grid = drop_piece(game, col, mark)
     score = get_heuristic(next_grid, mark)
     return score
 
 
-# Helper function for score_move: gets board at next step if agent drops piece in selected column
 def drop_piece(game, col, mark):
+    """Helper function for score_move: gets board at next step if agent drops piece in selected column."""
     next_grid = game.copy()
     for row in range(game.rows - 1, -1, -1):
         if next_grid.board[row][col] == 0:
@@ -99,8 +99,8 @@ def drop_piece(game, col, mark):
     return next_grid
 
 
-# Helper function for score_move: calculates value of heuristic for grid
 def get_heuristic(grid, mark):
+    """Helper function for score_move: calculates value of heuristic for grid."""
     num_threes = count_windows(grid, 3, mark)
     num_fours = count_windows(grid, 4, mark)
     num_threes_opp = count_windows(grid, 3, mark % 2 + 1)
@@ -108,15 +108,15 @@ def get_heuristic(grid, mark):
     return score
 
 
-# Helper function for get_heuristic: checks if window satisfies heuristic conditions
 def check_window(window, num_discs, piece, game):
+    """Helper function for get_heuristic: checks if window satisfies heuristic conditions."""
     return (
         window.count(piece) == num_discs and window.count(0) == game.inarow - num_discs
     )
 
 
-# Helper function for get_heuristic: counts number of windows satisfying specified heuristic conditions
 def count_windows(game, num_discs, piece):
+    """Helper function for get_heuristic: counts number of windows satisfying specified heuristic conditions."""
     num_windows = 0
     # horizontal
     for row in range(game.rows):
