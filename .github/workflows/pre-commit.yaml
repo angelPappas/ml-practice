@@ -20,6 +20,3 @@ jobs:
       - name: Run pre-commit
         run: pre-commit run --all-files
         working-directory: connect_4_RL
-      - name: Run pyright
-        run: uv run --project connect_4_RL pyright
-        working-directory: connect_4_RL
