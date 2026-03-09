@@ -200,7 +200,7 @@ class ConnectXEnv:
                         zorder = 2
 
                     radius = 0.42 if (r, c) in winning_cells else 0.38
-                    circle = plt.Circle((c, y), radius, color=color, zorder=zorder)
+                    circle = patches.Circle((c, y), radius, color=color, zorder=zorder)
                     ax.add_patch(circle)
 
             # Draw winning line
@@ -234,6 +234,8 @@ class ConnectXEnv:
                 title = f"Move {step_idx} / {total}"
 
             ax.set_title(title, color=TEXT_COL, fontsize=14, fontweight="bold", pad=10)
+
+            return []  # Return empty list since we clear and redraw everything
 
         anim = FuncAnimation(
             fig,

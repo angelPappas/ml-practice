@@ -1,0 +1,5 @@
+{
+  "include": ["connect_4_RL"],
+  "venvPath": "connect_4_RL",
+  "venv": ".venv"
+}

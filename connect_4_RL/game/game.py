@@ -95,7 +95,7 @@ def drop_piece(game, col, mark):
     for row in range(game.rows - 1, -1, -1):
         if next_grid.board[row][col] == 0:
             break
-    next_grid.board[row][col] = mark
+    next_grid.board[row][col] = mark  # type: ignore
     return next_grid
 
 
