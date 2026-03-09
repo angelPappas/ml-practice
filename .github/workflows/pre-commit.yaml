@@ -7,10 +7,10 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # Check out the repository with the 4th version of the checkout action
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version-file: "connect_4_RL/.python-version"
       - name: Install uv
         uses: astral-sh/setup-uv@v5
       - name: Create venv and install dependencies
@@ -22,3 +22,4 @@ jobs:
         working-directory: connect_4_RL
       - name: Run pyright
         run: uv run --project connect_4_RL pyright
+        working-directory: connect_4_RL
