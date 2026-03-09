@@ -89,6 +89,13 @@ def score_move(game, col, mark):
     return score
 
 
+def score_move_minimax(game, col, mark, n_steps):
+    """Calculates score if agent drops piece in selected column."""
+    next_grid = drop_piece(game, col, mark)
+    score = minimax(next_grid, n_steps - 1, False, mark, game)
+    return score
+
+
 def drop_piece(game, col, mark):
     """Helper function for score_move: gets board at next step if agent drops piece in selected column."""
     next_grid = game.copy()
@@ -105,6 +112,16 @@ def get_heuristic(grid, mark):
     num_fours = count_windows(grid, 4, mark)
     num_threes_opp = count_windows(grid, 3, mark % 2 + 1)
     score = num_threes - 1e2 * num_threes_opp + 1e6 * num_fours
+    return score
+
+
+def get_heuristic_minimax(grid, mark):
+    """Helper function for score_move: calculates value of heuristic for grid."""
+    num_threes = count_windows(grid, 3, mark)
+    num_fours = count_windows(grid, 4, mark)
+    num_threes_opp = count_windows(grid, 3, mark % 2 + 1)
+    num_fours_opp = count_windows(grid, 4, mark % 2 + 1)
+    score = num_threes - 1e2 * num_threes_opp + 1e6 * num_fours - 1e4 * num_fours_opp
     return score
 
 
@@ -149,6 +166,73 @@ def count_windows(game, num_discs, piece):
             if check_window(window, num_discs, piece, game):
                 num_windows += 1
     return num_windows
+
+
+def is_terminal_window(window, game):
+    """Helper function for minimax: checks if agent or opponent has four in a row in the window."""
+    return (
+        window.count(game.current_player.symbol) == game.inarow
+        or window.count(game.current_player.symbol % 2 + 1) == game.inarow
+    )
+
+
+def is_terminal_node(game):
+    """Helper function for minimax: checks if game has ended."""
+    # Check for draw
+    if list(game.board[0, :]).count(0) == 0:
+        return True
+    # Check for win: horizontal, vertical, or diagonal
+    # horizontal
+    for row in range(game.rows):
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(game.board[row, col : col + game.inarow])
+            if is_terminal_window(window, game):
+                return True
+    # vertical
+    for row in range(game.rows - (game.inarow - 1)):
+        for col in range(game.cols):
+            window = list(game.board[row : row + game.inarow, col])
+            if is_terminal_window(window, game):
+                return True
+    # positive diagonal
+    for row in range(game.rows - (game.inarow - 1)):
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(
+                game.board[range(row, row + game.inarow), range(col, col + game.inarow)]
+            )
+            if is_terminal_window(window, game):
+                return True
+    # negative diagonal
+    for row in range(game.inarow - 1, game.rows):
+        for col in range(game.cols - (game.inarow - 1)):
+            window = list(
+                game.board[
+                    range(row, row - game.inarow, -1), range(col, col + game.inarow)
+                ]
+            )
+            if is_terminal_window(window, game):
+                return True
+    return False
+
+
+def minimax(node, depth, maximizingPlayer, mark, game):
+    """Minimax implementation"."""
+    is_terminal = is_terminal_node(game)
+    valid_moves = game.get_valid_moves()
+    if depth == 0 or is_terminal:
+        return get_heuristic_minimax(node, mark)
+    if maximizingPlayer:
+        value = -np.inf
+        for col in valid_moves:
+            child = drop_piece(node, col, mark)
+            value = max(value, minimax(child, depth - 1, False, mark, game))
+        return value
+    else:
+        value = np.inf
+        for col in valid_moves:
+            child = drop_piece(node, col, mark % 2 + 1)
+            value = min(value, minimax(child, depth - 1, True, mark, game))
+        return value
 
 
 class Connect4:

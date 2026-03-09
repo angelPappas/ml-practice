@@ -1,7 +1,16 @@
 import numpy as np
 import random
 from typing import Callable
-from game.game import Connect4, ROWS, COLS, P1, P2, get_winning_cells, score_move
+from game.game import (
+    Connect4,
+    ROWS,
+    COLS,
+    P1,
+    P2,
+    get_winning_cells,
+    score_move,
+    score_move_minimax,
+)
 
 # ── Built-in agents ───────────────────────────────────────────────────
 
@@ -38,11 +47,33 @@ def agent_heuristic(game: Connect4) -> int:
     return random.choice(max_cols)
 
 
+def agent_minimax(game: Connect4) -> int:
+    # How deep to make the game tree: higher values take longer to run!
+    N_STEPS = 3
+    # Get list of valid moves
+    valid_moves = game.get_valid_moves()
+    # Use the heuristic to assign a score to each possible board in the next step
+    scores = dict(
+        zip(
+            valid_moves,
+            [
+                score_move_minimax(game, col, game.current_player.symbol, N_STEPS)
+                for col in valid_moves
+            ],
+        )
+    )
+    # Get a list of columns (moves) that maximize the heuristic
+    max_cols = [key for key in scores.keys() if scores[key] == max(scores.values())]
+    # Select at random from the maximizing columns
+    return random.choice(max_cols)
+
+
 BUILTIN_AGENTS = {
     "random": random_agent,
     "leftmost": agent_leftmost,
     "middle": agent_middle,
     "heuristic": agent_heuristic,
+    "minimax": agent_minimax,
 }
 
 
