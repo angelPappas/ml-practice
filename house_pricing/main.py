@@ -3,6 +3,7 @@ from src.data.preprocess import preprocess
 
 # from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
+
 # from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
@@ -30,4 +31,5 @@ log_experiment(
     model=type(model),
     hyperparameters=model.get_params(),
     metric="mae",
-    metric_value=mae)
+    metric_value=mae,
+)

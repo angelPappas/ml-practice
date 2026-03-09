@@ -14,6 +14,7 @@ FIELDNAMES = [
     "notes",
 ]
 
+
 def log_experiment(
     features: list,
     model: type,
@@ -30,12 +31,14 @@ def log_experiment(
         if not file_exists:
             writer.writeheader()
 
-        writer.writerow({
-            "timestamp": datetime.now().isoformat(),
-            "features": features,
-            "model": model,
-            "hyperparameters": str(hyperparameters),
-            "metric": metric,
-            "metric_value": metric_value,
-            "notes": notes,
-        })
+        writer.writerow(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "features": features,
+                "model": model,
+                "hyperparameters": str(hyperparameters),
+                "metric": metric,
+                "metric_value": metric_value,
+                "notes": notes,
+            }
+        )
