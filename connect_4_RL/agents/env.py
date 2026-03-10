@@ -68,12 +68,24 @@ def agent_minimax(game: Connect4) -> int:
     return random.choice(max_cols)
 
 
+def make_ppo_agent(model):
+    def agent(game):
+        obs = game.board.reshape(1, ROWS, COLS).astype(np.float32)
+        col, _ = model.predict(obs)
+        col = int(col)
+        valid = game.get_valid_moves()
+        return col if col in valid else random.choice(valid)
+
+    return agent
+
+
 BUILTIN_AGENTS = {
     "random": random_agent,
     "leftmost": agent_leftmost,
     "middle": agent_middle,
     "heuristic": agent_heuristic,
     "minimax": agent_minimax,
+    "RL_agent": make_ppo_agent,
 }
 
 

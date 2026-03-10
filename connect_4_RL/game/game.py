@@ -2,6 +2,9 @@ import numpy as np
 from typing import Optional
 import random
 
+import gymnasium
+from gymnasium import spaces
+
 ROWS = 6
 COLS = 7
 EMPTY = 0
@@ -348,3 +351,66 @@ class Connect4:
             print(
                 f"Player {self.current_player}'s turn ({'X' if self.current_player == P1 else 'O'})"
             )
+
+
+class ConnectFourGym(gymnasium.Env):
+    def __init__(self, agent2="random"):
+        self.game = Connect4()
+        self.rows = ROWS
+        self.columns = COLS
+        self.agent2 = agent2  # "random" or a callable(board, valid_moves) -> col
+
+        self.action_space = spaces.Discrete(self.columns)
+        self.observation_space = spaces.Box(
+            low=0, high=2, shape=(1, self.rows, self.columns), dtype=np.int_
+        )
+        self.reward_range = (-10, 1)
+        self.spec = None
+
+    def _get_obs(self):
+        return self.game.board.reshape(1, self.rows, self.columns).copy()
+
+    def _run_opponent(self):
+        """Let agent2 play its turn."""
+        valid_moves = self.game.get_valid_moves()
+        if not valid_moves:
+            return
+        if self.agent2 == "random":
+            col = random.choice(valid_moves)
+        elif callable(self.agent2):
+            col = self.agent2(self.game.board, valid_moves)
+        else:
+            col = random.choice(valid_moves)
+        self.game.step(col)
+
+    def reset(self, *, seed: int | None = None, options: dict | None = None):
+        super().reset(seed=seed)
+
+        self.game.reset()
+
+        if self.game.current_player == P2:
+            self._run_opponent()
+
+        return self._get_obs(), {}
+
+    def change_reward(self, done):
+        if self.game.winner == P1:  # agent won
+            return 1
+        elif done:  # opponent won or draw
+            return -1
+        else:
+            return 1 / (self.rows * self.columns)
+
+    def step(self, action):
+        action = int(action)
+        if not self.game.is_valid_move(action):
+            return self._get_obs(), -10, True, False, {}
+
+        _, done, _ = self.game.step(action)
+
+        if not done:
+            self._run_opponent()
+            done = self.game.done
+
+        reward = self.change_reward(done)
+        return self._get_obs(), reward, done, False, {}
