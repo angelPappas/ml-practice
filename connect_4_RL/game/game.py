@@ -60,26 +60,25 @@ def check_winner(board: np.ndarray, player: Player) -> bool:
 
 def get_winning_cells(board: np.ndarray, player: Player) -> list[tuple[int, int]]:
     """Return list of (row, col) cells forming the winning four. Empty list if no win."""
-    b = board
     for r in range(ROWS):
-        for c in range(COLS - 3):
-            cells = [(r, c + i) for i in range(4)]
-            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+        for c in range(COLS - (INAROW - 1)):
+            cells = [(r, c + i) for i in range(INAROW)]
+            if all(board[rc][cc] == player.symbol for rc, cc in cells):
                 return cells
-    for r in range(ROWS - 3):
+    for r in range(ROWS - (INAROW - 1)):
         for c in range(COLS):
-            cells = [(r + i, c) for i in range(4)]
-            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+            cells = [(r + i, c) for i in range(INAROW)]
+            if all(board[rc][cc] == player.symbol for rc, cc in cells):
                 return cells
-    for r in range(3, ROWS):
-        for c in range(COLS - 3):
-            cells = [(r - i, c + i) for i in range(4)]
-            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+    for r in range(INAROW - 1, ROWS):
+        for c in range(COLS - (INAROW - 1)):
+            cells = [(r - i, c + i) for i in range(INAROW)]
+            if all(board[rc][cc] == player.symbol for rc, cc in cells):
                 return cells
-    for r in range(ROWS - 3):
-        for c in range(COLS - 3):
-            cells = [(r + i, c + i) for i in range(4)]
-            if all(b[rc][cc] == player.symbol for rc, cc in cells):
+    for r in range(ROWS - (INAROW - 1)):
+        for c in range(COLS - (INAROW - 1)):
+            cells = [(r + i, c + i) for i in range(INAROW)]
+            if all(board[rc][cc] == player.symbol for rc, cc in cells):
                 return cells
     return []
 
