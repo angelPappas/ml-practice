@@ -29,31 +29,30 @@ P2 = Player(2)
 
 
 def check_winner(board: np.ndarray, player: Player) -> bool:
-    """Return True if `player` has four in a row."""
-    b = board
+    """Return True if `player` has INAROW pieces (4) in a row in any direction."""
 
     # Horizontal
     for r in range(ROWS):
-        for c in range(COLS - 3):
-            if all(b[r][c + i] == player.symbol for i in range(4)):
+        for c in range(COLS - (INAROW - 1)):
+            if all(board[r][c + i] == player.symbol for i in range(INAROW)):
                 return True
 
     # Vertical
-    for r in range(ROWS - 3):
+    for r in range(ROWS - (INAROW - 1)):
         for c in range(COLS):
-            if all(b[r + i][c] == player.symbol for i in range(4)):
+            if all(board[r + i][c] == player.symbol for i in range(INAROW)):
                 return True
 
     # Diagonal /
-    for r in range(3, ROWS):
-        for c in range(COLS - 3):
-            if all(b[r - i][c + i] == player.symbol for i in range(4)):
+    for r in range(INAROW - 1, ROWS):
+        for c in range(COLS - (INAROW - 1)):
+            if all(board[r - i][c + i] == player.symbol for i in range(INAROW)):
                 return True
 
     # Diagonal \
-    for r in range(ROWS - 3):
-        for c in range(COLS - 3):
-            if all(b[r + i][c + i] == player.symbol for i in range(4)):
+    for r in range(ROWS - (INAROW - 1)):
+        for c in range(COLS - (INAROW - 1)):
+            if all(board[r + i][c + i] == player.symbol for i in range(INAROW)):
                 return True
 
     return False
